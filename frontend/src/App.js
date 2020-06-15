@@ -94,11 +94,26 @@ class App extends Component {
       });
   };
 
-  startEdit(task) {
+  startEdit=(task)=> {
     this.setState({
       activeItem: task,
       editing: true,
     });
+  }
+
+  deleteItem=(task)=>{
+    var csrftoken = this.getCookie("csrftoken");
+
+    fetch(`http://127.0.0.1:8000/api/task-delete/${task.id}/`,{
+      method:"DELETE",
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify(this.state.activeItem),
+    }).then(response=>{
+      this.fetchTask()
+    })
   }
   render() {
     var tasks = this.state.todoList;
@@ -147,7 +162,9 @@ class App extends Component {
                   </button>
                 </div>
                 <div>
-                  <button className="btn btn-sm btn-outline-dark delete">
+                  <button
+                    onClick={() => self.deleteItem(task)}
+                    className="btn btn-sm btn-outline-dark delete">
                     -
                   </button>
                 </div>
