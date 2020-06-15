@@ -87,8 +87,16 @@ class App extends Component {
         console.log("Error", err);
       });
   };
+
+  startEdit(task) {
+    this.setState({
+      activeItem: task,
+      editing: true,
+    });
+  }
   render() {
     var tasks = this.state.todoList;
+    var self = this;
     return (
       <div className="container">
         <div id="task-container">
@@ -125,7 +133,10 @@ class App extends Component {
                   <span>{task.title}</span>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <button className="btn btn-sm btn-outline-info edit">
+                  <button
+                    onClick={() => self.startEdit(task)}
+                    className="btn btn-sm btn-outline-info edit"
+                  >
                     Edit
                   </button>
                 </div>
