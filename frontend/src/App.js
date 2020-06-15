@@ -2,6 +2,28 @@ import React, { Component } from "react";
 import "./App.css";
 
 class App extends Component {
+  state = {
+    todoList: [],
+    activeItem: {
+      id: null,
+      title: "",
+      completed: false,
+    },
+    editing: false,
+  };
+  componentWillMount() {
+    this.fetchTask();
+  }
+
+  fetchTask = () => {
+    console.log("Fetching");
+
+    fetch("http://127.0.0.1:8000/api/task-list/").then((response) =>
+      response.json()
+    ).then(data=>{
+      console.log("Data:",data)
+    })
+  };
   render() {
     return (
       <div className="container">
