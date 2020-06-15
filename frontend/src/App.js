@@ -64,7 +64,7 @@ class App extends Component {
     var csrftoken = this.getCookie("csrftoken");
 
     var url = "http://127.0.0.1:8000/api/task-create/";
-    if (this.state.editing == true) {
+    if (this.state.editing === true) {
       url = `http://127.0.0.1:8000/api/task-update/${this.state.activeItem.id}/`;
       this.setState({
         editing: false,
@@ -94,27 +94,45 @@ class App extends Component {
       });
   };
 
-  startEdit=(task)=> {
+  startEdit = (task) => {
     this.setState({
       activeItem: task,
       editing: true,
     });
-  }
+  };
 
-  deleteItem=(task)=>{
+  deleteItem = (task) => {
     var csrftoken = this.getCookie("csrftoken");
 
-    fetch(`http://127.0.0.1:8000/api/task-delete/${task.id}/`,{
-      method:"DELETE",
+    fetch(`http://127.0.0.1:8000/api/task-delete/${task.id}/`, {
+      method: "DELETE",
       headers: {
         "Content-type": "application/json",
         "X-CSRFToken": csrftoken,
       },
       body: JSON.stringify(this.state.activeItem),
-    }).then(response=>{
-      this.fetchTask()
-    })
-  }
+    }).then((response) => {
+      this.fetchTask();
+    });
+  };
+
+  strikeUnstrike = (task) => {
+    task.completed = !task.completed;
+
+    console.log("Strike", task.completed);
+    var csrftoken = this.getCookie("csrftoken");
+
+    fetch(`http://127.0.0.1:8000/api/task-update/${task.id}/`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ completed: task.completed, title: task.title }),
+    }).then((response) => {
+      this.fetchTask();
+    });
+  };
   render() {
     var tasks = this.state.todoList;
     var self = this;
@@ -150,8 +168,15 @@ class App extends Component {
           <div className="list-wrapper">
             {tasks.map((task, index) => (
               <div key={index} className="task-wrapper flex-wrapper">
-                <div style={{ flex: 7 }}>
-                  <span>{task.title}</span>
+                <div
+                  onClick={() => self.strikeUnstrike(task)}
+                  style={{ flex: 7 }}
+                >
+                  {task.completed == false ? (
+                    <span>{task.title}</span>
+                  ) : (
+                    <strike>{task.title}</strike>
+                  )}
                 </div>
                 <div style={{ flex: 1 }}>
                   <button
@@ -164,7 +189,8 @@ class App extends Component {
                 <div>
                   <button
                     onClick={() => self.deleteItem(task)}
-                    className="btn btn-sm btn-outline-dark delete">
+                    className="btn btn-sm btn-outline-dark delete"
+                  >
                     -
                   </button>
                 </div>
